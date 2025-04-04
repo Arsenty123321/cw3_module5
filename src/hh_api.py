@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-from config import HH_API_MAX_PER_PAGE, HH_API_MAX_PAGES, HH_API_URL
+from config import HH_API_MAX_PER_PAGE, HH_API_MAX_PAGES, HH_API_URL, HH_ORG_LIST
 
 
 class HHAPI:
@@ -10,18 +10,7 @@ class HHAPI:
     def __init__(self) -> None:
         self.__url: str = HH_API_URL
         self.__params: dict[str, str] = {"sort_by": "by_vacancies_open", 'page': 0, 'per_page': HH_API_MAX_PER_PAGE }
-        self.__name_ids: List[str] = [
-            "78638",  # Т-Банк
-            "3529",  # СБЕР
-            "2324020",  # Точка
-            "2173850",  # Аэрофлот Техникс
-            "5008932",  # Яндекс Практикум
-            "816144",  # ВкусВилл
-            "3757",  # Ингосстрах Банк
-            "1122462",  # Skyeng
-            "2748",  # Ростелеком
-            "2180",  # Ozon
-        ]
+        self.__name_ids: List[str] = HH_ORG_LIST
         self.organizations = []
 
     def get_org_response(self) -> List:
@@ -32,12 +21,13 @@ class HHAPI:
         while self.__params.get('page') != HH_API_MAX_PAGES:
             response = requests.get(self.__url, params=self.__params)
             if response.status_code != 200:
-                raise ValueError(f'Ошибка запроса данных: status_code={response.status_code} url={self.__url}')
+                # Reached page limit or other request error
+                break
             else:
                 org = response.json()["items"]
                 self.organizations.extend(org)
                 self.__params['page'] += 1
-                print(f"Org page: {self.__params['page']}")
+                # print(f"Org page: {self.__params['page']}")
         return self.organizations
 
     def get_org(self) -> List:
@@ -58,3 +48,23 @@ class HHAPI:
                 else:
                     name_organization.append(organization)
         return name_organization
+
+    @staticmethod
+    def get_vac_response(employers: List) -> List:
+        """
+            Получение вакансий по организациям
+        """
+        vac = []
+
+        for employer in employers:
+            request_params = {'page': 0, "per_page": HH_API_MAX_PER_PAGE}
+            while request_params['page'] != HH_API_MAX_PAGES:
+                response = requests.get(employer["vacancies_url"], request_params)
+                if response.status_code != 200:
+                    # Reached page limit or other request error
+                    break
+                else:
+                    vacancies = response.json()["items"]
+                    vac.extend(vacancies)
+                    request_params['page'] += 1
+        return vac
