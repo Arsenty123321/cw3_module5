@@ -68,3 +68,25 @@ class HHAPI:
                     vac.extend(vacancies)
                     request_params['page'] += 1
         return vac
+
+    @staticmethod
+    def vac_processing(vacancies_raw: List) -> list[dict[str, int]]:
+        """
+            Формирование информации о вакансиях для заполнения таблиц в DB
+        """
+        processed_vac = []
+        for vacancy in vacancies_raw:
+            if vacancy["salary"] is None:
+                salary = 0
+            else:
+                salary = vacancy["salary"]["from"] if vacancy["salary"]["from"] else 0
+            processed_vac.append(
+                {
+                    "id": vacancy["id"],
+                    "name": vacancy["name"],
+                    "salary": salary,
+                    "employer": vacancy["employer"]["id"],
+                    "url": vacancy["alternate_url"],
+                }
+            )
+        return processed_vac
