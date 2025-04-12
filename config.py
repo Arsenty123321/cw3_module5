@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 HH_API_URL = "https://api.hh.ru/employers"
-HH_API_MAX_PAGES = 1
+HH_API_MAX_PAGES = 2
 HH_API_MAX_PER_PAGE = 100
 
 HH_ORG_LIST=[
@@ -20,7 +20,7 @@ HH_ORG_LIST=[
 
 def get_config_db(filename='database.ini', section='postgresql'):
     """
-	Прочитать конфигурацию базы данных
+	    Прочитать конфигурацию базы данных
     """
     parser = ConfigParser()
     parser.read(filename)

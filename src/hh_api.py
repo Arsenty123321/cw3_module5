@@ -27,19 +27,15 @@ class HHAPI:
                 org = response.json()["items"]
                 self.organizations.extend(org)
                 self.__params['page'] += 1
-                # print(f"Org page: {self.__params['page']}")
+
         return self.organizations
 
     def get_org(self) -> List:
         """
             Получение данных компаний по заданному списку
         """
-
         name_organization = []
         self.get_org_response()
-
-        # DEBUG
-        print(f"Total organizations: {len(self.organizations)}")
 
         for name_id in self.__name_ids:
             for organization in self.organizations:
