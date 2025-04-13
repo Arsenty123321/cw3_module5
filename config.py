@@ -1,7 +1,9 @@
 from configparser import ConfigParser
 
 HH_API_URL = "https://api.hh.ru/employers"
-HH_API_MAX_PAGES = 2
+# Количество страниц пагинации
+HH_API_MAX_PAGES = 25
+# Количество записей при запросе к HH API (максимум 100)
 HH_API_MAX_PER_PAGE = 100
 
 HH_ORG_LIST=[
